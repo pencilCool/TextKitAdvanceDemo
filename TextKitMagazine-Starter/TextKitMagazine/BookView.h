@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
-@interface BookView : UIView
+@interface BookView : UIScrollView
 
 @property (nonatomic, copy) NSAttributedString *bookMarkup;
 - (void)buildFrames;

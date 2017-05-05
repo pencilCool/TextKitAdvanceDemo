@@ -17,15 +17,41 @@
 - (void)buildFrames
 {
     NSTextStorage *textStorage = [[NSTextStorage alloc] initWithAttributedString:self.bookMarkup];
+    
     _layoutManager = [[NSLayoutManager alloc]init];
     [textStorage addLayoutManager:_layoutManager];
     
-    NSTextContainer *textcontainer = [[NSTextContainer alloc] initWithSize:CGSizeMake(self.bounds.size.width, FLT_MAX)];
-    [_layoutManager addTextContainer:textcontainer];
     
-    // create a view
-    UITextView *textView = [[UITextView alloc] initWithFrame:self.bounds textContainer:textcontainer];
-    textView.scrollEnabled = YES;
-    [self addSubview:textView];
+    // build the frames
+    NSRange range = NSMakeRange(0, 0);
+    NSUInteger containterIndex = 0;
+    while (NSMaxRange(range) < _layoutManager.numberOfGlyphs) {
+        CGRect textViewRect = [self frameForViewAtIndex:containterIndex];
+        CGSize containerSize = CGSizeMake(textViewRect.size.width, textViewRect.size.height - 16.0f);
+        NSTextContainer *textContainer =
+        [[NSTextContainer alloc] initWithSize:containerSize];
+        [_layoutManager addTextContainer:textContainer];
+        
+        UITextView *textView = [[UITextView alloc] initWithFrame:textViewRect textContainer:textContainer];
+        [self addSubview:textView];
+        
+        containterIndex++ ;
+        range = [_layoutManager glyphRangeForTextContainer:textContainer];
+    }
+    
+    self.contentSize = CGSizeMake((self.bounds.size.width / 2) * (CGFloat)containterIndex, self.bounds.size.height);
+    self.pagingEnabled = YES;
+    
 }
+
+- (CGRect) frameForViewAtIndex:(NSUInteger) index
+{
+    CGRect textViewRect = CGRectMake(0, 0, self.bounds.size.width / 2, self.bounds.size.height);
+    textViewRect = CGRectInset(textViewRect, 10.0, 20.0);
+    textViewRect = CGRectOffset(textViewRect, (self.bounds.size.width / 2 ) * (CGFloat)index, 0.0);
+    return textViewRect;
+}
+
+
 @end
+
