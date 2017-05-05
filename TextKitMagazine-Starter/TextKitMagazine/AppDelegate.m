@@ -21,7 +21,7 @@
                                                      ofType:@"md"];
     MarkdownParser *parser = [[MarkdownParser alloc] init];
     self.bookMarkup = [parser parseMarkdownFile:path];
-       
+    
     
     
     // style the navigation bar
