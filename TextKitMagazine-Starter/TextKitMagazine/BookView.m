@@ -12,7 +12,7 @@
 {
     // layoutmanager 的重用就是将 text storage 中存储的字符变成渲染好的几何图案。
     NSLayoutManager *_layoutManager;
-    NSRange _wordCharaterRange;
+    NSRange _wordCharacterRange;
 }
 
 - (id)initWithFrame:(CGRect)frame
@@ -184,12 +184,32 @@
         return;
     }
     
-    _wordCharaterRange = [self wordThatContainsCharacter:charIndex
+    _wordCharacterRange = [self wordThatContainsCharacter:charIndex
                                                    string:textStorage.string];
-    [textStorage addAttribute:NSForegroundColorAttributeName value:[UIColor redColor] range:_wordCharaterRange];
+    [textStorage addAttribute:NSForegroundColorAttributeName value:[UIColor redColor] range:_wordCharacterRange];
     
     
     
+    
+    // 1
+    CGRect rect = [_layoutManager lineFragmentRectForGlyphAtIndex:glyphIndex effectiveRange:nil];
+    
+    // 2
+    NSRange wordGlyphRange = [_layoutManager glyphRangeForCharacterRange:_wordCharacterRange actualCharacterRange:nil];
+    CGPoint startLocation = [_layoutManager locationForGlyphAtIndex:wordGlyphRange.location];
+    CGPoint endLocation   = [_layoutManager locationForGlyphAtIndex:NSMaxRange(wordGlyphRange)];
+    
+    
+    // 3
+    CGRect wordRect = CGRectMake(startLocation.x, rect.origin.y, endLocation.x - startLocation.x, rect.size.height);
+    
+    // 4
+    wordRect = CGRectOffset(wordRect, tappedTextView.frame.origin.x, tappedTextView.frame.origin.y);
+    
+    // 5
+    wordRect = CGRectOffset(wordRect, 0.0, 8.0);
+    NSString *word = [textStorage.string substringWithRange:_wordCharacterRange];
+    [self.bookViewDelegate bookView:self didHighlightWord:word inRect:wordRect];
 }
 
 // 获取点击位置的单词的开头和结尾
@@ -209,7 +229,10 @@
 
 
 
-
+- (void)removeWordHighlight {
+    [_layoutManager.textStorage removeAttribute:NSForegroundColorAttributeName
+                                          range:_wordCharacterRange];
+}
 
 
 

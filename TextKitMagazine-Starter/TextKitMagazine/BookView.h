@@ -15,4 +15,7 @@
 - (void)navigateToCharacterLocation:(NSUInteger)location;
 
 @property (nonatomic, weak) id<BookViewDelegate> bookViewDelegate;
+
+- (void)removeWordHighlight;
+
 @end

@@ -9,8 +9,10 @@
 #import "AppDelegate.h"
 
 #import "BookViewController.h"
+#import "BookViewDelegate.h"
 
-@interface BookViewController ()
+
+@interface BookViewController ()<BookViewDelegate, UIPopoverControllerDelegate>
 
 @property (strong, nonatomic) UIPopoverController *masterPopoverController;
 
@@ -19,6 +21,7 @@
 @implementation BookViewController
 {
     BookView *_bookView;
+    UIPopoverController* _popover;
 }
 
 - (void)viewDidLoad
@@ -35,8 +38,9 @@
     _bookView.autoresizingMask = UIViewAutoresizingFlexibleWidth| UIViewAutoresizingFlexibleHeight;
     
     _bookView.bookMarkup = appDelegate.bookMarkup;
+    _bookView.bookViewDelegate = self;
     [self.view addSubview:_bookView];
-    
+
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -70,5 +74,24 @@
     [self.navigationItem setLeftBarButtonItem:nil animated:YES];
     self.masterPopoverController = nil;
 }
+
+
+
+- (void)bookView:(BookView *)bookView didHighlightWord:(NSString *)word inRect:(CGRect)rect {
+    UIReferenceLibraryViewController *dictionaryVC = [[UIReferenceLibraryViewController alloc]
+                                                      initWithTerm: word];
+    _popover.contentViewController = dictionaryVC;
+    _popover = [[UIPopoverController alloc] initWithContentViewController:dictionaryVC];
+    _popover.delegate = self;
+    [_popover presentPopoverFromRect:rect inView:_bookView
+            permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
+}
+
+- (void)popoverControllerDidDismissPopover: (UIPopoverController *)popoverController
+{
+    [_bookView removeWordHighlight];
+}
+
+
 
 @end
