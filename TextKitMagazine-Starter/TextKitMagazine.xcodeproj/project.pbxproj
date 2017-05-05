@@ -69,6 +69,7 @@
 		EC6F617A1EBC4CB10004C409 /* MarkdownParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MarkdownParser.m; sourceTree = "<group>"; };
 		EC6F617C1EBC619A0004C409 /* Chapter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Chapter.h; sourceTree = "<group>"; };
 		EC6F617D1EBC619A0004C409 /* Chapter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Chapter.m; sourceTree = "<group>"; };
+		EC6F617F1EBC720D0004C409 /* BookViewDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BookViewDelegate.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -140,6 +141,7 @@
 			children = (
 				729DD73D178333690018AF08 /* AppDelegate.h */,
 				729DD73E178333690018AF08 /* AppDelegate.m */,
+				EC6F617F1EBC720D0004C409 /* BookViewDelegate.h */,
 				EC6F61761EBC29BA0004C409 /* BookView.h */,
 				EC6F61771EBC29BA0004C409 /* BookView.m */,
 				EC6F61791EBC4CB10004C409 /* MarkdownParser.h */,

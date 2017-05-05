@@ -7,10 +7,12 @@
 //
 
 #import <UIKit/UIKit.h>
-
+#import "BookViewDelegate.h"
 @interface BookView : UIScrollView<UIScrollViewDelegate>
 
 @property (nonatomic, copy) NSAttributedString *bookMarkup;
 - (void)buildFrames;
 - (void)navigateToCharacterLocation:(NSUInteger)location;
+
+@property (nonatomic, weak) id<BookViewDelegate> bookViewDelegate;
 @end

@@ -12,6 +12,7 @@
 {
     // layoutmanager 的重用就是将 text storage 中存储的字符变成渲染好的几何图案。
     NSLayoutManager *_layoutManager;
+    NSRange _wordCharaterRange;
 }
 
 - (id)initWithFrame:(CGRect)frame
@@ -19,6 +20,9 @@
     self = [super initWithFrame:frame];
     if (self) {
         self.delegate = self;
+        UITapGestureRecognizer *recognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTap:)];
+        [self addGestureRecognizer:recognizer];
+        
     }
     return self;
 }
@@ -150,5 +154,70 @@
     }
   //  [self buildViewsForCurrentOffset];
 }
+
+- (void)handleTap: (UITapGestureRecognizer *)tapRecognizer
+{
+    NSTextStorage *textStorage = _layoutManager.textStorage;
+    
+    CGPoint tappedLocation = [tapRecognizer locationInView:self];
+    
+    UITextView *tappedTextView = nil;
+    for (UITextView *textView in [self textSubViews]) {
+        if (CGRectContainsPoint(textView.frame, tappedLocation)) {
+            tappedTextView = textView;
+            break;
+        }
+    }
+    
+    if (!tappedTextView) {
+        return;
+    }
+    
+    CGPoint subViewLocation = [tapRecognizer locationInView:tappedTextView];
+    subViewLocation.y -= 8;
+    
+    
+    NSUInteger glyphIndex = [_layoutManager glyphIndexForPoint:subViewLocation inTextContainer:tappedTextView.textContainer];
+    NSUInteger charIndex = [_layoutManager characterIndexForGlyphAtIndex:glyphIndex];
+    
+    if (![[NSCharacterSet letterCharacterSet] characterIsMember:[textStorage.string characterAtIndex:charIndex]]) {
+        return;
+    }
+    
+    _wordCharaterRange = [self wordThatContainsCharacter:charIndex
+                                                   string:textStorage.string];
+    [textStorage addAttribute:NSForegroundColorAttributeName value:[UIColor redColor] range:_wordCharaterRange];
+    
+    
+    
+}
+
+// 获取点击位置的单词的开头和结尾
+- (NSRange)wordThatContainsCharacter:(NSUInteger)charIndex string:(NSString *)string
+{
+    NSUInteger startLocation = charIndex;
+    while(startLocation > 0 &&[[NSCharacterSet letterCharacterSet] characterIsMember: [string characterAtIndex:startLocation-1]]) {
+        startLocation--;
+    }
+    NSUInteger endLocation = charIndex;
+    while(endLocation < string.length && [[NSCharacterSet letterCharacterSet] characterIsMember: [string characterAtIndex:endLocation+1]]) {
+        endLocation++; }
+    return NSMakeRange(startLocation, endLocation-startLocation+1);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 @end
 
