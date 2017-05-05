@@ -14,6 +14,14 @@
     NSLayoutManager *_layoutManager;
 }
 
+- (id)initWithFrame:(CGRect)frame
+{
+    self = [super initWithFrame:frame];
+    if (self) {
+        self.delegate = self;
+    }
+    return self;
+}
 - (void)buildFrames
 {
     NSTextStorage *textStorage = [[NSTextStorage alloc] initWithAttributedString:self.bookMarkup];
@@ -32,8 +40,8 @@
         [[NSTextContainer alloc] initWithSize:containerSize];
         [_layoutManager addTextContainer:textContainer];
         
-        UITextView *textView = [[UITextView alloc] initWithFrame:textViewRect textContainer:textContainer];
-        [self addSubview:textView];
+//        UITextView *textView = [[UITextView alloc] initWithFrame:textViewRect textContainer:textContainer];
+//        [self addSubview:textView];
         
         containterIndex++ ;
         range = [_layoutManager glyphRangeForTextContainer:textContainer];
@@ -42,6 +50,8 @@
     self.contentSize = CGSizeMake((self.bounds.size.width / 2) * (CGFloat)containterIndex, self.bounds.size.height);
     self.pagingEnabled = YES;
     
+    [self buildViewsForCurrentOffset];
+
 }
 
 - (CGRect) frameForViewAtIndex:(NSUInteger) index
@@ -52,6 +62,77 @@
     return textViewRect;
 }
 
+// 获取为 textView 的子视图
+- (NSArray *)textSubViews {
+    NSMutableArray *views = [NSMutableArray new];
+    for (UIView *subview in self.subviews)
+    {
+        if ([subview class] == [UITextView class])
+        {
+            [views addObject:subview];
+        }
+    }
+    return views;
+}
+
+// 返回textContainer 的持有者textView
+- (UITextView *)textViewForContainer:(NSTextContainer *)textContainer
+{
+    for (UITextView *textView in [self textSubViews])
+    {
+        if (textView.textContainer == textContainer)
+        {
+        return textView;
+        }
+    }
+    return nil;
+}
+
+// 只渲染 前一页，当前页，后下一页。其他的都不渲染
+- (BOOL)shouldRenderView:(CGRect)viewFrame {
+    if (viewFrame.origin.x + viewFrame.size.width < (self.contentOffset.x - self.bounds.size.width))
+        return NO;
+    if (viewFrame.origin.x >
+        (self.contentOffset.x + self.bounds.size.width * 2.0))
+        return NO;
+    
+    return YES;
+}
+
+
+- (void)buildViewsForCurrentOffset {
+    // 1
+    for(NSUInteger index = 0; index < _layoutManager.textContainers.count; index++) {
+        // 2
+        NSTextContainer *textContainer = _layoutManager.textContainers[index];
+        UITextView *textView = [self textViewForContainer:textContainer];
+        // 3
+        CGRect textViewRect = [self frameForViewAtIndex:index];
+        if ([self shouldRenderView:textViewRect]) { // 4
+            if (!textView)
+            {
+                NSLog(@"Adding view at index %u", index);
+                UITextView* textView = [[UITextView alloc] initWithFrame:textViewRect
+                                                           textContainer:textContainer];
+                
+                [self addSubview:textView];
+            }
+        }
+        else
+        { // 5
+            if (textView)
+            {
+                NSLog(@"Deleting view at index %u", index);
+                [textView removeFromSuperview];
+            }
+        }
+    }
+}
+
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
+{
+    [self buildViewsForCurrentOffset];
+}
 
 @end
 
