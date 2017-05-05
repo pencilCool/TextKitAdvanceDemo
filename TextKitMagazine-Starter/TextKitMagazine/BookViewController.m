@@ -49,6 +49,12 @@
     [_bookView buildFrames];
 }
 
+
+- (void)navigateToCharacterLocation:(NSUInteger)location
+{
+    [self.masterPopoverController dismissPopoverAnimated:YES];
+    [_bookView navigateToCharacterLocation:location];
+}
 #pragma mark - Split view
 
 - (void)splitViewController:(UISplitViewController *)splitController willHideViewController:(UIViewController *)viewController withBarButtonItem:(UIBarButtonItem *)barButtonItem forPopoverController:(UIPopoverController *)popoverController

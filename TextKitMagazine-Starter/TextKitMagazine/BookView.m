@@ -134,5 +134,21 @@
     [self buildViewsForCurrentOffset];
 }
 
+
+- (void)navigateToCharacterLocation:(NSUInteger)location
+{
+    CGFloat offset = 0.0f;
+    for (NSTextContainer *container in _layoutManager.textContainers)
+    {
+        NSRange glyphRange = [_layoutManager glyphRangeForTextContainer:container];
+        NSRange charRange = [_layoutManager characterRangeForGlyphRange:glyphRange actualGlyphRange:nil];
+        if (location >= charRange.location && location < NSMaxRange(charRange)) {
+            self.contentOffset = CGPointMake(offset, 0);
+            return;
+        }
+        offset += self.bounds.size.width / 2.0f;
+    }
+  //  [self buildViewsForCurrentOffset];
+}
 @end
 

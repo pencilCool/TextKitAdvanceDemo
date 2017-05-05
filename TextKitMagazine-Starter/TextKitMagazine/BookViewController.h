@@ -9,5 +9,5 @@
 #import <UIKit/UIKit.h>
 
 @interface BookViewController : UIViewController <UISplitViewControllerDelegate>
-
+- (void)navigateToCharacterLocation:(NSUInteger)location;
 @end
