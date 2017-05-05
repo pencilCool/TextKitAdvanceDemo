@@ -52,6 +52,21 @@
         
         [parsedOutput appendAttributedString:[[NSAttributedString alloc] initWithString:@"\n\n"]];
     }
+    
+    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"\\!\\[.*\\]\\((.*)\\)" options:0 error:nil];
+    NSArray *matches = [regex matchesInString:[parsedOutput string] options:0 range:NSMakeRange(0, parsedOutput.length)];
+    
+    for (NSTextCheckingResult *result in [matches reverseObjectEnumerator]) {
+        NSRange matchRange = [result range];
+        NSRange captureRange = [result rangeAtIndex:1];
+        
+        NSTextAttachment *textAttachment = [NSTextAttachment new];
+        textAttachment.image  = [UIImage imageNamed:[parsedOutput.string substringWithRange:captureRange]];
+        NSAttributedString *replacementString = [NSAttributedString attributedStringWithAttachment:textAttachment];
+        [parsedOutput replaceCharactersInRange:matchRange withAttributedString:replacementString];
+        
+        
+    }
     return parsedOutput;
 }
 
