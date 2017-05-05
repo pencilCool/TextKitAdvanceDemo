@@ -9,6 +9,8 @@
 #import "ChaptersViewController.h"
 #import "BookViewController.h"
 
+#import "AppDelegate.h"
+#import "Chapter.h"
 @interface ChaptersViewController ()
 
 @end
@@ -39,19 +41,27 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return 0;
+    return [self chapters].count;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Cell" forIndexPath:indexPath];
-
+    Chapter *chapter = [self chapters][indexPath.row];
+    cell.textLabel.text = chapter.title;
     return cell;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
 
+}
+
+
+- (NSArray *)chapters
+{
+    AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+    return appDelegate.chapters;
 }
 
 @end

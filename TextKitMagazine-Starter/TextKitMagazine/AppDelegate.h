@@ -15,4 +15,6 @@
 //This property will store the book markup and formatting in an attributed string.
 @property (nonatomic, copy) NSAttributedString *bookMarkup;
 
+@property (nonatomic, strong) NSArray *chapters;
+
 @end
